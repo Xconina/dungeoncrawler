@@ -17,7 +17,7 @@ inventory = {
     "small": False,
     "keyx": False,
 }
-monsters = ["slime monster", "undead", "ghoul", "eyebat", "spikeworm", "abomination," "hobgoblin", "vermin soldier", "elemental"]
+monsters = ["slime monster", "undead", "ghoul", "eyebat", "spikeworm", "abomination", "hobgoblin", "vermin soldier", "elemental"]
 boss = ["Shadow Dragon", "Gelatinous Cube", "Chimera", "Elder Brain", "Banshee" ]
 highscores ={
 }
@@ -30,10 +30,10 @@ def help():
 	print("Type help at any time to read these rules again")
 #function to check current inventory
 def checkinv():
-	for key in sorted(inventory):
-		print(key, "=" , inventory[key])
-	for i in mementos:
-		print(i)
+    for key in sorted(inventory):
+        print(key, "" , inventory[key])
+    for i in mementos:
+        print(i)
 #where items picked up along the way are stored
 mementos=[]
 #printwhenn not valid
@@ -48,6 +48,7 @@ score = inventory["gold"] + len(mementos) + inventory["health"]
 ###fight function
 def fight():
     global monsters	
+    global name
     currentmonster= random.choice(monsters)
     print("You take a quick look to see of the room is safe.")
     input()
@@ -55,13 +56,16 @@ def fight():
     fighting = ["fight", "flee"]
     userfight = ""
 #while userfight not in fighting:
-    userfight = input("fight or flee?")
+    userfight = input("fight or flee?\n")
     if userfight == "fight":
         if inventory["knife"] > 0:
             print("You slash the" + currentmonster)
             choice = random.choice(drops)
-            print("The " + currentmonster + " drops a " + choice + ".\nYou put it in your bag.")
+            coin = random.randint(1,8)
+            strcoin = str(coin)
+            print("The " + currentmonster + " drops a " + choice + " and " + strcoin + " gold coins.\nYou put these in your bag.")
             mementos.append((choice))
+            inventory["gold"]+= coin
             inventory["runaway"] = False
         else:
             print("You punch him but he is too strong. The " + currentmonster + " hits you back hard. You must flee.")
@@ -80,10 +84,14 @@ def fight():
 def exitroom():
     global mementos
     global inventory
+    global name
     print("You enter the room and see an exit. Finally!")
-    checkm = random.randind(1,3)
+    checkm = random.randint(1,3)
     if checkm == 2:
         fight()
+    else:
+        print("The room looks free of monsters.")
+        inventory["runaway"]=False
     if inventory["runaway"]==True:
         saferoom()
     else:
@@ -124,15 +132,19 @@ def exitroom():
                 print("You walk to the exit and open the door. There is fresh air!")
                 input()
                 print("Congrats! You have made it out.\nAnd you have so much treasure to bring home.\nI hope you had fun on our adventure, "+ name + ".")
+                input()
                 print("Here is your ending inventory: ")
                 checkinv()
                 input()
-                print("Your score for this game is: " + score)
+                scorestr = str(score)
+                print("Your score for this game is: " + scorestr)
+                input()
                 highscores.update({name : score})
-                print("The highscores are: " + highscores)
+                strhs = str(highscores)
+                print("The highscores are: " + strhs)
                 again = input("Would you like to play again? yes or no")
                 if again == "no":
-                    print("See you later!")
+                    print("Hope to see you around again!")
                     quit()
                 if again == "yes":
                     mementos.clear()
@@ -169,7 +181,12 @@ def treasureroom():
     print("You are unable to flee, you must fight")
     if inventory["knife"] >= 1:
         print("Good thing you have a knife. You take it out of your pocket and charge at the " + randmon)
+        input()
         print("It fights back. You take one damage. Then you surprise it, shoving your knife through it's chest\nThe "+ randmon + " collapses.")
+        input()
+        loot = random.choice(drops)
+        mementos.append((loot))
+        print("The monster drops a " + loot)
         inventory["health"] -= 1
         input()
     elif inventory ["knife"] < 1 and inventory["shovel"]== True:
@@ -202,7 +219,7 @@ def treasureroom():
             print("You stumble, but then you take both your knives out and attack!\nYou hit him on the left, then the right")
             print("He takes damage, but he is strong. He hits you again.")
             inventory["health"]-=1
-            nowhealth = str.inventory["health"]
+            nowhealth = str(inventory["health"])
             print("Your health is now " + nowhealth)
             if inventory["health"]<= 2:
                 choose = input("Would you like to flee to the saferoom, yes or no?")
@@ -239,7 +256,7 @@ def treasureroom():
     while user_input not in directions:
         user_input = input("What would you like to do?")
         if user_input == "inventory":
-            inventory()
+            checkinv()
         elif user_input == "help":
             help()
         elif user_input == "south":
@@ -298,99 +315,120 @@ def keyroom():
         fight()
     else:
         print("You look around, and the room seems free of monsters")
+        inventory["runaway"]= False
     if inventory["runaway"] == True:
         saferoom()
     else:
-        directions = ["west", "north", "left"]
+        directions = ["west", "north"]
+        directionsr =["west", "north", "left"]
+        directionsl=["west","north", "right"]
         user_input = ""
         print("You look back at the floor to see beetles, roaches, and some snakes. Its creepy in here")
         input()
         print("The room is a bit of a maze.")
-        mazechoice = input("Do you stay go left or right through the maze?")
-        if mazechoice == "right":
-            print("You make your way through a tunnel. You see a box covered in roaches, and piles of dead snakes")
-            rightchoice = ""
-            while rightchoice not in directions:
-                rightchoice = input("You make look around here.\nWhen done, type west to go back to the saferoom,\nor type left to go through the left side of the maze")
-                if rightchoice == "inventory":
-                    inventory()
-                elif rightchoice == "map":
-                    if inventory["map"]== True:
-                        print("Head north for treasure and exit")
-                    else:
-                        print("You have no map")
-                elif rightchoice== "help":
-                    help()
-                elif rightchoice== "dig":
-                    print("You start to dig but bugs and snakes are everywhere. You don't find anything")
-                elif rightchoice == "search":
-                    if inventory["key"]== False:
-                        print("You lift the pile of dead snakes and peak under. Something shines under there")
-                        print("After further inspection, you find a long rusted key. You keep it")
-                        inventory["key"]= True
-                    else:
-                        print("You look in the box that is covered in roaches. It's gross.\nInside you see something moving.")
-                        print("Woah! It's a dog! How did it get in there?")
-                        if 'dog leash' in mementos:
-                            print("You grab the leash from your bag and put it on the dog. His collar says 'SPIKE'")
-                            print("You take him on your journey")
-                            mementos.append("SPIKE")
+        mazechoice = ""
+        while mazechoice not in directions:
+            mazechoice = input("Do you stay go left or right through the maze? Or go west to exit")
+            if mazechoice == "right":
+                print("You make your way through a tunnel. You see a box covered in roaches, and piles of dead snakes")
+                rightchoice = ""
+                while rightchoice not in directionsr:
+                    rightchoice = input("You may look around here.\nWhen done, type west to go back to the saferoom,\nor type left to go through the left side of the maze\n")
+                    if rightchoice == "inventory":
+                        checkinv()
+                        input()
+                    elif rightchoice == "map":
+                        if inventory["map"]== True:
+                            print("Head north for treasure and exit")
+                            input()
                         else:
-                            print("You don't have a leash, so the dog runs away. At least he is free")
-                elif rightchoice == "west":
-                    saferoom()
-                elif rightchoice == "left":
-                    print("You head to the start and turn left into the maze.")
-                    print("There are less bugs and snakes over here. It is a little brighter.\nYou hear spooky noises at the end of the hall.\n\
-                          The noises are coming from the door. Type north at any time to go through the door.\nYou see a deep hole in the ground, as well as holes in the walls.")
-                    leftchoice = ""
-                    while leftchoice not in directions:
-                        leftchoice = input("You may type north or east to go through the doors. Or you may look around here")
-                        if leftchoice == "inventory":
-                            inventory()
-                        elif leftchoice == "help":
-                            help()
-                        elif leftchoice == "map":
-                            if inventory["map"]== True:
-                                print("You must head north next.")
-                            else:
-                                print("You have no map")
-                        elif leftchoice == "west":
-                            saferoom()
-                        elif leftchoice == "north":
-                            treasureroom()
-                        elif leftchoice == "search":
-                            if inventory["flashlight"] == True:
-                                print("You look into the holes in the wall. You pull something small out of a hole.")
-                                print("It is a baby rattle. You keep it")
-                                mementos.append("baby rattle")
-                            else:
-                                print("You look into the holes on the wall but it is dark. You feel something pinch you")
+                            print("You have no map")
+                            input()
+                    elif rightchoice== "help":
+                        help()
+                        input()
+                    elif rightchoice== "dig":
+                        print("You start to dig but bugs and snakes are everywhere. You don't find anything")
+                        input()
+                    elif rightchoice == "search":
+                        if inventory["key"]== False:
+                            print("You lift the pile of dead snakes and peak under. Something shines under there")
+                            print("After further inspection, you find a long rusted key. You keep it")
+                            inventory["key"]= True
+                            input()
+                        else:
+                            print("You look in the box that is covered in roaches. It's gross.\nInside you see something moving.")
+                            print("Woah! It's a dog! How did it get in there?")
+                            if 'dog leash' in mementos:
+                                print("You grab the leash from your bag and put it on the dog. His collar says 'SPIKE'")
+                                print("You take him on your journey")
+                                mementos.append("SPIKE")
                                 input()
-                                print("You take your hand out of the wall and there is a scorpion attached.\nYou lose one health, but keep the scorpion")
-                                mementos.append("scorpion")
+                            else:
+                                print("You don't have a leash, so the dog runs away. At least he is free")
+                                input()
+                    elif rightchoice == "west":
+                        saferoom()
+                    elif rightchoice == "left":
+                        print("You head to the start and turn left into the maze.")
+                    else:
+                        notvalid()
+            if mazechoice == "left":
+                print("There are less bugs and snakes over here. It is a little brighter.\nYou hear spooky noises at the end of the hall.\n\
+                        The noises are coming from the door. Type north at any time to go through the door.\nYou see a deep hole in the ground, as well as holes in the walls.")
+                leftchoice = ""
+                while leftchoice not in directionsl:
+                    leftchoice = input("You may type north or west to go through the doors. Or you may look around here\n")
+                    if leftchoice == "inventory":
+                        checkinv()
+                    elif leftchoice == "help":
+                        help()
+                    elif leftchoice == "map":
+                        if inventory["map"]== True:
+                            print("You must head north next.")
+                        else:
+                            print("You have no map")
+                    elif leftchoice == "west":
+                        saferoom()
+                    elif leftchoice == "north":
+                        treasureroom()
+                    elif leftchoice == "search":
+                        if inventory["flashlight"] == True:
+                            print("You look into the holes in the wall. You pull something small out of a hole.")
+                            print("It is a baby rattle. You keep it")
+                            mementos.append("baby rattle")
+                            input()
+                        else:
+                            print("You look into the holes on the wall but it is dark. You feel something pinch you")
+                            input()
+                            print("You take your hand out of the wall and there is a scorpion attached.\nYou lose one health, but keep the scorpion")
+                            mementos.append("scorpion")
+                            inventory["health"]-= 1
+                            input()
+                    elif leftchoice == "dig":
+                            if inventory["flashlight"]==True:
+                                print("You use your flashlight to look into the hole. You see splattered slime and a bag.")
+                                if inventory["shovel"]==True:
+                                    print("You use your shovel to scoop up the bag. Inside, you find an ornate silver key. You keep it")
+                                    inventory["keyx"]= True
+                                else:
+                                    print("You can't quite reach the bag. You'll need some kind of tool to get it.")
+                            else:
+                                print("You look into the big hole on the ground but it's too dark. You try reaching in but touch something gooey.")
+                                print("You pull out your hand and it is covered in toxic slime! You lose a health")
                                 inventory["health"]-= 1
                                 input()
-                        elif leftchoice == "dig":
-                                if inventory["flashlight"]==True:
-                                    print("You use your flashlight to look into the hole. You see splattered slime and a bag.")
-                                    if inventory["shovel"]==True:
-                                        print("You use your shovel to scoop up the bag. Inside, you find an ornate silver key. You keep it")
-                                    else:
-                                        print("You can't quite reach the bag. You'll need some kind of tool to get it.")
+                                if inventory["health"]== 0:
+                                    print("Your health is too low. You must go to the entryway")
+                                    entryway()
                                 else:
-                                    print("You look into the big hole on the ground but it's too dark. You try reaching in but touch something gooey.")
-                                    print("You pull out your hand and it is covered in toxic slime! You lose a health")
-                                    inventory["health"]-= 1
-                                    if inventory["health"]== 0:
-                                        print("Your health is too low. You must go to the entryway")
-                                        entryway()
-                                    else:
-                                        print("You should look for a flashlight")
-                        else:
-                            notvalid()
-                else:
-                    notvalid()
+                                    print("You should look for a flashlight")
+                    else:
+                        notvalid()
+            if mazechoice == "west":
+                saferoom()
+            else:
+                notvalid()
 
 #shovel is located here, only go west
 def shovelroom():
@@ -402,6 +440,7 @@ def shovelroom():
         fight()
     else:
         print("You look around and the room is safe.")
+        inventory["runaway"]= False
     if inventory["runaway"]== True:
         monsterroom()
     else:
@@ -411,7 +450,7 @@ def shovelroom():
         while user_input not in directions:
             user_input= input("What would you like to do?")
             if user_input == "inventory":
-                inventory()
+                checkinv()
             elif user_input == "map":
                 if inventory["map"]== True:
                     print("You need to leave here and head north")
@@ -500,7 +539,7 @@ def saferoom():
         elif userinput == "help":
             help()
         elif userinput == "inventory":
-            inventory()
+            checkinv()
         else:
             notvalid()
 
@@ -510,10 +549,11 @@ def room4():
     global mementos
     checkm = random.randint(1,3)
     print("You enter a room. It looks small and cozy")
-    if checkm == "2":
+    if checkm == 2:
         fight()
     else:
         print("You look around and the room is free of monsters.")
+        inventory["runaway"]= False
     if inventory["runaway"] == True:
         flashlightroom()
     else:
@@ -521,7 +561,7 @@ def room4():
         directions = ["east", "south"]
         user_input = ""
         while user_input not in directions:
-            user_input = input("There are doors on the east and south. What would you like to do?")
+            user_input = input("There are doors on the east and south. What would you like to do?\n")
             if user_input == "search":
                 if inventory["health"] < 5:
                     print("You open the backpack and find food. Yum")
@@ -543,7 +583,7 @@ def room4():
                     mementos.append("human finger bone")
                     input()
             elif user_input == "inventory":
-                inventory()
+                checkinv()
             elif user_input == "help":
                 help()
             elif user_input == "map":
@@ -574,10 +614,11 @@ def flashlightroom():
     global mementos
     checkm = random.randint(1,4)
     print("You enter a new room. The walls are blue and painted with stars.")
-    if checkm == "2":   
+    if checkm == 2:   
         fight()
     else:
         print("You look around and the room is free of monsters.")
+        inventory["runaway"]= False
     if inventory["runaway"] == True:
         entryway()
     else:
@@ -586,7 +627,7 @@ def flashlightroom():
         options = ["north", "east", "search", "dig", "map", "inventory"]
         user_input = ""
         while user_input not in directions:
-            user_input = input("You can search, dig, go north, or east.\n")
+            user_input = input("What do you do next? Doors are east and north. \n")
             if user_input == "search":
                 if inventory["flashlight"] ==True:
                     found = random.choice(finds)
@@ -612,14 +653,13 @@ def flashlightroom():
             elif user_input == "map":
                 if inventory["map"]== True:
                     choice = ""
-                    choice =input("Do Youwant directions to treasure or exit?")
-                elif choice == "treasure":
-                    print("Head northeast")
-          
-                elif choice == "exit":
-                    print("Head north")
-                else:
-                    notvalid()
+                    choice =input("Do you want directions to treasure or exit?")
+                    if choice == "treasure":
+                        print("Head northeast")
+                    elif choice == "exit":
+                        print("Head north")
+                    else:
+                        notvalid()
             elif user_input == "north":
                 room4()
             else:
@@ -641,7 +681,9 @@ def slimeroom():
             inventory["runaway"] = False
             if (inventory["knife"] > 0):
                 print("You slash the slime monster! It bursts into goops of slime.")
-                print("It drops a " + random.choice(drops))
+                loot = random.choice(drops)
+                print("It drops a " + loot + " . You put it in your bag.")
+                mementos.append((loot))
             else:
                 print("You punch the slime monster and it flees. But first, it sprays you with toxic slime.")
                 inventory["health"] -= 1
@@ -696,7 +738,7 @@ def slimeroom():
                     choice = input("Are you looking for treasure or exit?")
                     if choice == "treasure":
                         print("Head north")
-                    if choice == "exit":
+                    elif choice == "exit":
                         print("Head northwest")
                     else:
                         notvalid()
@@ -717,10 +759,11 @@ def monsterroom():
     print("You come into a very large room.\nThe walls are covered in spider webs and there are skeletons in the corner.")
     input()
     print(checkm)
-    if checkm == "two":
+    if checkm == 2:
         fight()
     else:
-        print("You look around and the room is free of monsters.")	
+        print("You look around and the room is free of monsters.")
+        inventory["runaway"]= False	
     if inventory["runaway"] == True:
         room4()
     else:
@@ -735,6 +778,7 @@ def monsterroom():
                     choice = input("Where do you want to search? Skeletons or webs?")
                     if choice == "skeletons":
                         print("You see three skeletons.\nTwo adults and a child.\nThey are sitting next to something.\nYou pick it up.")
+                        input()
                         print("You found a treasure map.\nThey must have been searching for treasure.\nYou put the map in your bag.")
                         inventory[map] = True
                         print("Type 'map' at any time for a directional hint.")
@@ -788,19 +832,20 @@ def entryway():
     print("It's so dark and dusty in here.\nAll I can see are doors on the east, north, and west walls.")
     input()
     while userInput not in directions:
-        userInput = input("What next? You may search, dig. Or continue east, north, or west.")
+        userInput = input("What next? You may search, dig. Or continue east, north, or west.\n")
         if userInput == "search":
             if inventory["flashlight"] == True:
                 print("You found a skeleton in the corner. You looked through the pockets and found five gold.")
-                inventory["gold"] += 1
-                print(inventory["gold"])
+                inventory["gold"] += 5
+                strgold = str(inventory["gold"])
+                print("You have "+ strgold + " gold.")
                 input()
             else:
                 print("It's way too dark in here to search.\nYou'll need to find a flashlight. I think I saw one west of here before.")
                 input()
         elif userInput == "dig":
             if inventory["shovel"] == True:
-                print("Spiders jump out of the hole! When they're out of the way you find a photo album. It says 'Adamos'. Their family name. You see pictures of a couple and their baby. You put this in your bag.")
+                print("You start digging. Spiders jump out of the hole! When they're out of the way you find a photo album.\nIt says 'Adamos'.Must be a family name. You see pictures of a couple and their baby. You put this in your bag.")
                 mementos.append("photo album")
                 input()
             else:
@@ -812,7 +857,7 @@ def entryway():
                 choice = input("Are you looking for treasure or exit?")
                 if choice == "treasure":
                     print("Head north")
-                if choice == "exit":
+                elif choice == "exit":
                     print("Head north")
                 else:
                     notvalid()
@@ -835,6 +880,7 @@ def entryway():
 
 #intro scene
 def begin():
+    global name
     print("Oh, hello there traveller.\nI haven't seen you around here before.")
     name = input("What is your name? \n")
     print("Nice to meet you, " + name + ". I'm Giz.\nI'm the resident robot guide here, I'll show you around\n.")
