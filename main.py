@@ -745,9 +745,14 @@ def slimeroom():
                     inventory["knife"] += 1
                     mementos.append("knife")
                 else:
-                    print("Nice! You found a knife. That should come in handy if we see more monsters.")
-                    inventory["knife"] += 1
-                    mementos.append("knife")
+                    if inventory["knife"]==False:
+                        print("Nice! You found a knife. That should come in handy if we see more monsters.")
+                        inventory["knife"] += 1
+                        mementos.append("knife")
+                    else:
+                        print("Nice! You found another knife.")
+                        inventory["knife"] += 1
+                        mementos.append("knife")
             elif userinput == "west":
                 entryway()
             elif userinput == "dig":
