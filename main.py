@@ -5,7 +5,7 @@ import random
 import time
 #inventory dictiinary. values change throught game
 inventory = {
-	"shovel": False,
+	"shovel": False
 	"flashlight" :False,
 	"key" : False,
 	"treasure": False,
@@ -20,6 +20,7 @@ inventory = {
 monsters = ["slime monster", "undead", "ghoul", "eyebat", "spikeworm", "abomination", "hobgoblin", "vermin soldier", "elemental"]
 boss = ["Shadow Dragon", "Gelatinous Cube", "Chimera", "Elder Brain", "Banshee" ]
 highscores ={
+    "Ash": 153,
 }
 def help():
 	print("The available options for most rooms are: search, dig, map, inventory, help")
@@ -30,8 +31,8 @@ def help():
 	print("Type help at any time to read these rules again")
 #function to check current inventory
 def checkinv():
-    for key in sorted(inventory):
-        print(key, "" , inventory[key])
+    #for key in sorted(inventory):
+        #print(key, "" , inventory[key])
     for i in mementos:
         print(i)
 #where items picked up along the way are stored
@@ -43,7 +44,7 @@ def rules():
 	print("Remember, my tech only understands lowercase input. ")
 drops = ["meat", "ancient scroll", "artifact", "bag of silver", "vial of angelic blood", "gauntlet", "teeth", "tattered leather", "claws", "vial of ectoplasm"]
 finds = ["gemstone", "torn stuffed animal", "notebook", "compass", "water bottle", "brooch", "enchanted book", "wizard's robe", "talisman", "wand"]
-score = inventory["gold"] + len(mementos) + inventory["health"]
+
 
 ###fight function
 def fight():
@@ -136,6 +137,7 @@ def exitroom():
                 print("Here is your ending inventory: ")
                 checkinv()
                 input()
+                score = inventory["gold"] + len(mementos) + inventory["health"]
                 scorestr = str(score)
                 print("Your score for this game is: " + scorestr)
                 input()
@@ -225,13 +227,19 @@ def treasureroom():
                 choose = input("Would you like to flee to the saferoom, yes or no?")
                 if choose == "yes":
                     saferoom()
+                else:
+                    print("You give the fight all you have! You back up and throw one of your knives at the monster.\n\
+                          Instantly, he shrieks and flees. Your knife goes with him.")
+                    bossloot = random.choice(drops)
+                    print("On his way out, he dropped a " + bossloot + " which you put in your bag.")
+                    mementos.append((bossloot))
             else:
                 print("You give the fight all you have! You back up, and throw one of your knives at the monster.\n\
                       Instantly, he shrieks and flees. Your knife goes with him.")
                 bossloot = random.choice(drops)
                 print("On his way out, he dropped a " + bossloot + " which you put in your bag.")
                 mementos.append((bossloot))
-    if inventory["knife"] == 1:
+    elif inventory["knife"] == 1:
         print("This fight will be hard, but you will try your best. It may have been more helpful to have two knives.")
         print("Before you know it, the " + randboss + " attacks with a giant axe. You dodge, but he cuts your arm")
         inventory["health"]-= 1
@@ -244,6 +252,7 @@ def treasureroom():
         else:
             print("You fight long and hard. The monster bites your arm, and you slash his head.\nAfter a long fight, you catch him by surprise and shove your knife through his heart")
             bossloot = random.choice(drops)
+            inventory["health"]-= 1
             print("The " + randboss + " falls to the floor. He drops " + bossloot + " and you put it in your bag" )
             mementos.append((bossloot))
     else:
@@ -355,6 +364,7 @@ def keyroom():
                             print("You lift the pile of dead snakes and peak under. Something shines under there")
                             print("After further inspection, you find a long rusted key. You keep it")
                             inventory["key"]= True
+                            mementos.append("rusty key")
                             input()
                         else:
                             print("You look in the box that is covered in roaches. It's gross.\nInside you see something moving.")
@@ -411,6 +421,7 @@ def keyroom():
                                 if inventory["shovel"]==True:
                                     print("You use your shovel to scoop up the bag. Inside, you find an ornate silver key. You keep it")
                                     inventory["keyx"]= True
+                                    mementos.append("ornate silver key")
                                 else:
                                     print("You can't quite reach the bag. You'll need some kind of tool to get it.")
                             else:
@@ -464,6 +475,7 @@ def shovelroom():
                 if inventory["shovel"]== False:
                     print("You walk over the the wooden box and pry it open. Inside is a shovel! You take it")
                     inventory["shovel"]= True
+                    mementos.append("shovel")
                     input()
                 else:
                     print("You look deep into the wooden box. Under some sand is a shoe. You keep it")
@@ -637,6 +649,7 @@ def flashlightroom():
                 else:
                     print("You walk towards the box and find a flashlight sitting behind it.")
                     inventory["flashlight"] = True
+                    mementos.append("flashlight")
             elif user_input == "dig":
                 if inventory["shovel"] == True:
                     found = random.choice(finds)
@@ -719,9 +732,11 @@ def slimeroom():
                     mementos.append((loot))
                     print("You also found another knife!")
                     inventory["knife"] += 1
+                    mementos.append("knife")
                 else:
                     print("Nice! You found a knife. That should come in handy if we see more monsters.")
                     inventory["knife"] += 1
+                    mementos.append("knife")
             elif userinput == "west":
                 entryway()
             elif userinput == "dig":
