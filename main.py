@@ -5,7 +5,7 @@ import random
 import time
 #inventory dictiinary. values change throught game
 inventory = {
-	"shovel": False
+	"shovel": False,
 	"flashlight" :False,
 	"key" : False,
 	"treasure": False,
