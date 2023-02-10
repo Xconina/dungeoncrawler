@@ -3,7 +3,7 @@
 #Try to get a high score
 import random
 import time
-#inventory dictiinary. values change throught game
+#inventory dictionary. values change throughout game
 inventory = {
 	"shovel": False,
 	"flashlight" :False,
